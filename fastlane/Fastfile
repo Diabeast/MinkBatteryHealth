@@ -1,10 +1,34 @@
 default_platform(:ios)
+
 platform :ios do
-  lane :testflight do
-    api_key = app_store_connect_api_key(key_id: ENV["FASTLANE_KEY_ID"], issuer_id: ENV["FASTLANE_ISSUER_ID"], key_filepath: File.expand_path("../api_key.p8", __dir__))
-    match(type: "appstore", api_key: api_key, app_identifier: "com.9CGZ7BWVXT.minkbatteryhealth", readonly: false)
-    increment_build_number(build_number: ENV.fetch("GITHUB_RUN_NUMBER", Time.now.to_i.to_s), xcodeproj: "ios/App/App.xcodeproj")
-    build_app(workspace: "ios/App/App.xcworkspace", scheme: "App", export_method: "app-store")
-    upload_to_testflight(api_key: api_key, skip_waiting_for_build_processing: true)
+  lane :beta do
+    api_key = app_store_connect_api_key(
+      key_id: ENV["FASTLANE_KEY_ID"], 
+      issuer_id: ENV["FASTLANE_ISSUER_ID"], 
+      key_filepath: File.expand_path("../api_key.p8", __dir__)
+    )
+    
+    match(
+      type: "appstore", 
+      api_key: api_key, 
+      app_identifier: "com.9CGZ7BWVXT.minkbatteryhealth", 
+      readonly: false
+    )
+    
+    increment_build_number(
+      build_number: ENV.fetch("GITHUB_RUN_NUMBER", Time.now.to_i.to_s), 
+      xcodeproj: "ios/App/App.xcodeproj"
+    )
+    
+    build_app(
+      workspace: "ios/App/App.xcworkspace", 
+      scheme: "App", 
+      export_method: "app-store"
+    )
+    
+    upload_to_testflight(
+      api_key: api_key, 
+      skip_waiting_for_build_processing: true
+    )
   end
 end
