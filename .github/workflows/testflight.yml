@@ -27,4 +27,4 @@ jobs:
           TEAMID: ${{ secrets.TEAMID }}
           MATCH_GIT_URL: https://github.com/${{ github.repository }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        run: bundle exec fastlane ios testflight
+        run: bundle exec fastlane ios beta
