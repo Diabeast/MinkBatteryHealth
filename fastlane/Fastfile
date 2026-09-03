@@ -23,7 +23,8 @@ platform :ios do
     build_app(
       workspace: "ios/App/App.xcworkspace", 
       scheme: "App", 
-      export_method: "app-store"
+      export_method: "app-store",
+      xcargs: "DEVELOPMENT_TEAM='#{ENV['TEAMID']}'"
     )
     
     upload_to_testflight(
