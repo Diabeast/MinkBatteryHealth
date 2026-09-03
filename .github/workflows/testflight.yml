@@ -12,6 +12,8 @@ jobs:
         with: {ruby-version: "3.3", bundler-cache: true}
       - run: npm install
       - run: npx cap add ios && npx cap sync ios
+      - name: Apply Apple bundle identifier
+        run: sed -i '' 's/com\.mink\.batteryhealth/com.9CGZ7BWVXT.minkbatteryhealth/g' ios/App/App.xcodeproj/project.pbxproj
       - name: App Store Connect key
         run: echo '${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}' | base64 --decode > api_key.p8
       - name: Authorize signing repository
