@@ -3,32 +3,41 @@ default_platform(:ios)
 platform :ios do
   lane :beta do
     api_key = app_store_connect_api_key(
-      key_id: ENV["FASTLANE_KEY_ID"], 
-      issuer_id: ENV["FASTLANE_ISSUER_ID"], 
+      key_id: ENV["FASTLANE_KEY_ID"],
+      issuer_id: ENV["FASTLANE_ISSUER_ID"],
       key_filepath: File.expand_path("../api_key.p8", __dir__)
     )
-    
+
     match(
-      type: "appstore", 
-      api_key: api_key, 
-      app_identifier: "com.9CGZ7BWVXT.minkbatteryhealth", 
+      type: "appstore",
+      api_key: api_key,
+      app_identifier: "com.9CGZ7BWVXT.minkbatteryhealth",
       readonly: false
     )
-    
+
     increment_build_number(
-      build_number: ENV.fetch("GITHUB_RUN_NUMBER", Time.now.to_i.to_s), 
+      build_number: ENV.fetch("GITHUB_RUN_NUMBER", Time.now.to_i.to_s),
       xcodeproj: "ios/App/App.xcodeproj"
     )
-    
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/App/App.xcodeproj",
+      team_id: ENV["TEAMID"],
+      code_sign_identity: "iPhone Distribution",
+      profile_name: "match AppStore com.9CGZ7BWVXT.minkbatteryhealth",
+      targets: ["App"]
+    )
+
     build_app(
-      workspace: "ios/App/App.xcworkspace", 
-      scheme: "App", 
+      workspace: "ios/App/App.xcworkspace",
+      scheme: "App",
       export_method: "app-store",
       xcargs: "DEVELOPMENT_TEAM='#{ENV['TEAMID']}'"
     )
-    
+
     upload_to_testflight(
-      api_key: api_key, 
+      api_key: api_key,
       skip_waiting_for_build_processing: true
     )
   end
