@@ -1,0 +1,5 @@
+git_url(ENV.fetch("MATCH_GIT_URL"))
+git_branch("certs")
+storage_mode("git")
+type("appstore")
+app_identifier(["com.9CGZ7BWVXT.minkbatteryhealth"])

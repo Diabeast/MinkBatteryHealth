@@ -1,0 +1,6 @@
+{
+  "appId": "com.9CGZ7BWVXT.minkbatteryhealth",
+  "appName": "Mink Battery Health",
+  "webDir": "www",
+  "ios": {"contentInset": "automatic", "preferredContentMode": "mobile"}
+}

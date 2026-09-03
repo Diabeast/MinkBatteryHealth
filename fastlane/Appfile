@@ -1,0 +1,2 @@
+app_identifier("com.9CGZ7BWVXT.minkbatteryhealth")
+team_id(ENV["TEAMID"])

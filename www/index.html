@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#081018"><title>Mink Battery Health</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header><div><p class="eyebrow">TESLA MINK</p><h1>Battery Health</h1></div><span class="online">● Online</span></header>
+    <section class="hero card">
+      <div class="ring"><strong id="soc">78%</strong><span>batterij</span></div>
+      <div><p class="label">Geschat bereik</p><h2 id="range">342 km</h2><p class="muted">Laatst bijgewerkt zojuist</p></div>
+    </section>
+    <section class="metrics">
+      <article class="card"><span>Gezondheid</span><strong>94%</strong><small>Geschatte capaciteit</small></article>
+      <article class="card"><span>Laadlimiet</span><strong>80%</strong><small>Thuisprofiel</small></article>
+      <article class="card"><span>Temperatuur</span><strong>21°C</strong><small>Interieur</small></article>
+      <article class="card"><span>Kilometerstand</span><strong>84.231</strong><small>km</small></article>
+    </section>
+    <section><h2>Bediening</h2><div class="controls">
+      <button data-command="climate"><b>♨</b><span>Klimaat</span></button>
+      <button data-command="lock"><b>⌾</b><span>Vergrendelen</span></button>
+      <button data-command="charge"><b>ϟ</b><span>Laden</span></button>
+      <button data-command="flash"><b>☀</b><span>Lichten</span></button>
+    </div></section>
+    <section class="card chart"><div><span>Batterijtrend</span><strong>−5,8%</strong><small>sinds nieuw</small></div><svg viewBox="0 0 300 90" aria-label="Batterijtrend"><path d="M2 12 C45 18 55 34 92 30 S145 49 178 45 S230 63 298 69"/></svg></section>
+    <nav><button class="active">Overzicht</button><button>Laden</button><button>Klimaat</button><button>Instellingen</button></nav>
+  </main>
+  <dialog id="confirm"><h3>Commando bevestigen</h3><p id="confirmText"></p><div><button id="cancel">Annuleren</button><button id="send">Uitvoeren</button></div></dialog>
+  <script src="app.js"></script>
+</body></html>

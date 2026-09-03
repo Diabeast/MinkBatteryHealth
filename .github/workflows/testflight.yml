@@ -1,0 +1,25 @@
+name: Build Mink Battery Health iOS
+on: {workflow_dispatch: {}}
+permissions: {contents: write}
+jobs:
+  testflight:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "24"}
+      - uses: ruby/setup-ruby@v1
+        with: {ruby-version: "3.3", bundler-cache: true}
+      - run: npm install
+      - run: npx cap add ios && npx cap sync ios
+      - name: App Store Connect key
+        run: echo '${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}' | base64 --decode > api_key.p8
+      - name: Build and upload
+        env:
+          FASTLANE_KEY_ID: ${{ secrets.FASTLANE_KEY_ID }}
+          FASTLANE_ISSUER_ID: ${{ secrets.FASTLANE_ISSUER_ID }}
+          TEAMID: ${{ secrets.TEAMID }}
+          MATCH_GIT_URL: https://github.com/${{ github.repository }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+        run: bundle exec fastlane ios testflight
