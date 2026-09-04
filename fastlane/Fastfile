@@ -13,8 +13,8 @@ platform :ios do
     match(
       type: "appstore",
       api_key: api_key,
-      app_identifier: "com.9CGZ7BWVXT.minkbatteryhealth",
-      readonly: true
+      app_identifier: ["com.9CGZ7BWVXT.minkbatteryhealth", "com.9CGZ7BWVXT.minkbatteryhealth.widget"],
+      readonly: false
     )
 
     increment_build_number(
@@ -29,6 +29,15 @@ platform :ios do
       code_sign_identity: "iPhone Distribution",
       profile_name: "match AppStore com.9CGZ7BWVXT.minkbatteryhealth",
       targets: ["App"]
+    )
+
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "ios/App/App.xcodeproj",
+      team_id: ENV["TEAMID"],
+      code_sign_identity: "iPhone Distribution",
+      profile_name: "match AppStore com.9CGZ7BWVXT.minkbatteryhealth.widget",
+      targets: ["MinkBatteryWidget"]
     )
 
     build_app(

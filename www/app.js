@@ -1,11 +1,36 @@
 const titles={overview:'Battery Health',trips:'Ritten',controls:'Bediening',settings:'Instellingen'};
-const dialog=document.querySelector('#confirm'),toast=document.querySelector('#toast');
-const labels={climate:'Klimaat starten op 21 °C?',lock:'Auto vergrendelen?',charge:'Laden starten?',flash:'Lichten kort laten knipperen?',honk:'Claxon eenmaal laten klinken?',frunk:'Frunk openen? Let op: deze moet handmatig worden gesloten.',trunk:'Trunk openen?'};
+const confirmDialog=document.querySelector('#confirm'),climateDialog=document.querySelector('#climateDialog'),vehicleDialog=document.querySelector('#vehicleDialog'),toast=document.querySelector('#toast');
+const labels={lock:'Tesla Mink vergrendelen?',charge:'Laden starten?',flash:'Lichten kort laten knipperen?',honk:'Claxon eenmaal laten klinken?',frunk:'Frunk openen? Let op: deze moet handmatig worden gesloten.',trunk:'Trunk openen?'};
+const storedUrl=localStorage.getItem('serverUrl')||'https://tesla-mink-health.duckdns.org';
+document.querySelector('#serverUrl').value=storedUrl;document.querySelector('#apiKey').value=localStorage.getItem('apiKey')||'';
 function openTab(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));document.querySelectorAll('.tabbar [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelector('#pageTitle').textContent=titles[name];scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tab)));
-document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>{dialog.dataset.command=b.dataset.command;document.querySelector('#confirmText').textContent=labels[b.dataset.command];dialog.showModal()}));
-document.querySelector('#cancel').onclick=()=>dialog.close();document.querySelector('#send').onclick=()=>{dialog.close();showToast('Commando staat klaar. De live Tesla-koppeling volgt zodra de backend is verbonden.')};
-function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),3500)}
-function updateLocation(){const name=document.querySelector('#locationName'),detail=document.querySelector('#locationDetail');if(!navigator.geolocation){name.textContent='Niet beschikbaar';return}name.textContent='Locatie bepalen…';detail.textContent='Even geduld';navigator.geolocation.getCurrentPosition(p=>{name.textContent='Huidige locatie';detail.textContent=`${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`},()=>{name.textContent='Locatietoegang nodig';detail.textContent='Sta locatie toe in de iPhone-instellingen'},{enableHighAccuracy:true,timeout:10000,maximumAge:300000})}
-document.querySelector('#locate').onclick=updateLocation;document.querySelector('#locationToggle').onchange=e=>document.querySelector('.location-card').hidden=!e.target.checked;
-document.addEventListener('DOMContentLoaded',()=>{document.documentElement.style.backgroundColor='#031329';const bar=window.Capacitor?.Plugins?.StatusBar;if(bar){bar.setOverlaysWebView({overlay:true});bar.setStyle({style:'LIGHT'})}});
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>openTab(b.dataset.tab));
+document.querySelectorAll('[data-command]').forEach(b=>b.onclick=()=>{confirmDialog.dataset.command=b.dataset.command;document.querySelector('#confirmText').textContent=labels[b.dataset.command];confirmDialog.showModal()});
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());
+document.querySelector('#send').onclick=async()=>{const command=confirmDialog.dataset.command;confirmDialog.close();await sendCommand(command,{})};
+document.querySelector('#vehiclePicker').onclick=()=>vehicleDialog.showModal();document.querySelector('.vehicle-choice').onclick=()=>{vehicleDialog.close();showToast('Tesla Mink is geselecteerd')};
+document.querySelectorAll('[data-climate]').forEach(b=>b.onclick=()=>climateDialog.showModal());
+const slider=document.querySelector('#tempSlider'),tempValue=document.querySelector('#tempValue');
+function setTemp(value){value=Math.max(15,Math.min(28,Number(value)));slider.value=value;tempValue.textContent=Number.isInteger(value)?value:value.toFixed(1);document.querySelectorAll('.targetTemp').forEach(x=>x.textContent=tempValue.textContent)}
+slider.oninput=()=>setTemp(slider.value);document.querySelector('#tempDown').onclick=()=>setTemp(Number(slider.value)-.5);document.querySelector('#tempUp').onclick=()=>setTemp(Number(slider.value)+.5);
+document.querySelector('#startClimate').onclick=async()=>{climateDialog.close();await sendCommand('climate',{temperature:Number(slider.value)})};
+function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),4000)}
+function raw(entry){if(!entry)return null;const value=entry.value;return value&&typeof value==='object'&&'value' in value?value.value:value}
+function number(entry){const value=Number(raw(entry));return Number.isFinite(value)?value:null}
+function render(data){
+ const soc=number(data.battery_percent),miles=number(data.estimated_range),range=miles===null?null:Math.round(miles*1.609344),inside=number(data.inside_temp);
+ if(soc!==null){const rounded=Math.round(soc);document.querySelector('#topSoc').textContent=`${rounded}%`;document.querySelector('#soc').innerHTML=`${rounded}<small>%</small>`}
+ if(range!==null){document.querySelector('#topRange').textContent=`${range} km`;document.querySelector('#range').innerHTML=`${range} <small>km</small>`}
+ if(inside!==null)document.querySelector('#cabinTemp').textContent=inside.toFixed(0);
+ if(data.address){document.querySelector('#locationName').textContent=data.address;document.querySelector('#locationDetail').textContent='Laatst door Tesla Mink gemeld'}
+ const connectivity=raw(data.connectivity);const online=String(connectivity?.Status||connectivity?.status||connectivity||'').toLowerCase().includes('connect');
+ document.querySelector('.car-state span').innerHTML=`<i></i> Tesla Mink is ${online?'online':'in slaapstand'}`;
+ document.querySelector('.vehicle-status span').textContent=online?'● Online':'◐ Slaapstand';
+ updateWidget({percent:soc===null?59:Math.round(soc),range:range===null?232:range,address:data.address||'Locatie nog niet geladen'});
+}
+async function refreshTelemetry(showError=false){const url=(localStorage.getItem('serverUrl')||storedUrl).replace(/\/$/,'');const key=localStorage.getItem('apiKey');if(!key){if(showError)showToast('Vul bij Instellingen eerst je persoonlijke API-sleutel in.');return false}try{const response=await fetch(`${url}/api/v1/mobile/summary`,{headers:{'X-API-Key':key}});if(!response.ok)throw new Error(`Server antwoordt met ${response.status}`);render(await response.json());document.querySelector('#connectionStatus').textContent='Verbonden · live gegevens';return true}catch(error){document.querySelector('#connectionStatus').textContent='Geen verbinding';if(showError)showToast(`Verbinding mislukt: ${error.message}`);return false}}
+async function sendCommand(command,payload){const url=(localStorage.getItem('serverUrl')||storedUrl).replace(/\/$/,'');const key=localStorage.getItem('apiKey');if(!key){showToast('Vul bij Instellingen eerst je persoonlijke API-sleutel in.');openTab('settings');return}showToast('Tesla Mink wordt zo nodig gewekt…');try{const response=await fetch(`${url}/api/v1/mobile/commands/${command}`,{method:'POST',headers:{'X-API-Key':key,'Content-Type':'application/json'},body:JSON.stringify(payload)});if(!response.ok)throw new Error(`Server antwoordt met ${response.status}`);showToast('Opdracht succesvol naar Tesla Mink verzonden.');setTimeout(()=>refreshTelemetry(),5000)}catch(error){showToast(`Opdracht mislukt: ${error.message}`)}}
+function updateWidget(snapshot={}){const bridge=window.Capacitor?.Plugins?.WidgetBridge;if(!bridge)return;bridge.update({serverUrl:localStorage.getItem('serverUrl')||storedUrl,apiKey:localStorage.getItem('apiKey')||'',...snapshot}).catch(()=>{})}
+document.querySelector('#saveConnection').onclick=async()=>{localStorage.setItem('serverUrl',document.querySelector('#serverUrl').value.trim());localStorage.setItem('apiKey',document.querySelector('#apiKey').value.trim());updateWidget();await refreshTelemetry(true)};
+document.querySelector('#locate').onclick=()=>refreshTelemetry(true);
+document.addEventListener('DOMContentLoaded',()=>{const bar=window.Capacitor?.Plugins?.StatusBar;if(bar){bar.setOverlaysWebView({overlay:true});bar.setStyle({style:'LIGHT'})}refreshTelemetry();setInterval(refreshTelemetry,60000)});
