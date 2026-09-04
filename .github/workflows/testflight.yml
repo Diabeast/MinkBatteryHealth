@@ -13,7 +13,12 @@ jobs:
         with: {ruby-version: "3.3", bundler-cache: true}
       - run: npm install
       - name: Generate iOS project with Swift Package Manager
-        run: npx cap add ios --packagemanager SPM && npx cap sync ios
+        run: |
+          mv Gemfile Gemfile.fastlane
+          trap 'mv Gemfile.fastlane Gemfile' EXIT
+          npx cap add ios --packagemanager SPM
+          mv Gemfile.fastlane Gemfile
+          trap - EXIT
       - name: Apply Apple bundle identifier
         run: |
           sed -i '' 's/com\.mink\.batteryhealth/com.9CGZ7BWVXT.minkbatteryhealth/g' ios/App/App.xcodeproj/project.pbxproj
