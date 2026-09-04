@@ -24,7 +24,7 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" App/Info.plist
           /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Mink Battery Health gebruikt je locatie om de positie van je auto te tonen.'" App/Info.plist
           cd ../..
-          ruby widget/add_widget.rb
+          bundle exec ruby widget/add_widget.rb
       - name: Apply Apple bundle identifier
         run: |
           sed -i '' 's/com\.mink\.batteryhealth/com.9CGZ7BWVXT.minkbatteryhealth/g' ios/App/App.xcodeproj/project.pbxproj
