@@ -17,6 +17,7 @@ document.querySelector('#startClimate').onclick=async()=>{climateDialog.close();
 function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),4000)}
 function raw(entry){if(!entry)return null;const value=entry.value;return value&&typeof value==='object'&&'value' in value?value.value:value}
 function number(entry){const value=Number(raw(entry));return Number.isFinite(value)?value:null}
+function syncLabel(value){if(!value)return 'Nog geen voertuigdata';const date=new Date(value);if(Number.isNaN(date.getTime()))return 'Laatst ontvangen';const minutes=Math.max(0,Math.round((Date.now()-date.getTime())/60000));if(minutes<1)return 'Zojuist gesynchroniseerd';if(minutes<60)return `${minutes} min geleden`;const hours=Math.round(minutes/60);if(hours<24)return `${hours} uur geleden`;return date.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}
 function render(data){
  const soc=number(data.battery_percent),miles=number(data.estimated_range),range=miles===null?null:Math.round(miles*1.609344),inside=number(data.inside_temp),energy=number(data.energy_remaining);
  if(soc!==null){const rounded=Math.round(soc);document.querySelector('#soc').innerHTML=`${rounded}<small>%</small>`;document.querySelector('#batteryTabSoc').textContent=`${rounded}%`;const level=Math.max(1,Math.ceil(rounded/10));const fill=document.querySelector('#batteryFill');fill.setAttribute('y',String(19-level*1.6));fill.setAttribute('height',String(level*1.6))}
@@ -25,7 +26,7 @@ function render(data){
  if(energy!==null)document.querySelector('#energyRemaining').textContent=`${energy.toFixed(1)} kWh`;
  if(data.address){document.querySelector('#locationName').textContent=data.address;document.querySelector('#locationDetail').textContent='Laatst door Tesla Mink gemeld'}
  const connectivity=raw(data.connectivity);const received=data.battery_percent?.received_at;const recent=received&&Date.now()-new Date(received).getTime()<300000;const online=String(connectivity?.Status||connectivity?.status||connectivity||'').toLowerCase().includes('connect')||recent;
- document.querySelector('#healthRing').classList.toggle('online',Boolean(online));document.querySelector('#batteryConnection').textContent=online?'Online':'Slaapstand';
+ document.querySelector('#healthRing').classList.toggle('online',Boolean(online));document.querySelector('#batteryConnection').textContent=online?'Online':'Slaapstand';document.querySelector('#syncStrip').classList.toggle('online',Boolean(online));document.querySelector('#vehicleState').textContent=online?'Online':'Slaapstand';document.querySelector('#lastSync').textContent=syncLabel(data.last_updated||received||data.connectivity?.received_at);
  document.querySelector('.vehicle-status span').textContent=online?'● Online':'◐ Slaapstand';
  updateWidget({percent:soc===null?59:Math.round(soc),range:range===null?232:range,address:data.address||'Locatie nog niet geladen'});
 }
