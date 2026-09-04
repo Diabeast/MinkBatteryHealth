@@ -1,9 +1,11 @@
-const dialog=document.querySelector('#confirm');
-const labels={climate:'Klimaat starten op 21 °C?',lock:'Auto vergrendelen?',charge:'Laden starten?',flash:'Lichten kort laten knipperen?'};
-document.querySelectorAll('[data-command]').forEach(button=>button.addEventListener('click',()=>{dialog.dataset.command=button.dataset.command;document.querySelector('#confirmText').textContent=labels[button.dataset.command];dialog.showModal()}));
-document.querySelector('#cancel').onclick=()=>dialog.close();
-document.querySelector('#send').onclick=()=>{dialog.close();alert('De veilige backendkoppeling wordt in de volgende versie geactiveerd.');};
-document.querySelectorAll('.tabbar button').forEach(button=>button.addEventListener('click',()=>{
-  document.querySelectorAll('.tabbar button').forEach(item=>item.classList.remove('active'));
-  button.classList.add('active');
-}));
+const titles={overview:'Battery Health',trips:'Ritten',controls:'Bediening',settings:'Instellingen'};
+const dialog=document.querySelector('#confirm'),toast=document.querySelector('#toast');
+const labels={climate:'Klimaat starten op 21 °C?',lock:'Auto vergrendelen?',charge:'Laden starten?',flash:'Lichten kort laten knipperen?',honk:'Claxon eenmaal laten klinken?',frunk:'Frunk openen? Let op: deze moet handmatig worden gesloten.',trunk:'Trunk openen?'};
+function openTab(name){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.dataset.page===name));document.querySelectorAll('.tabbar [data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));document.querySelector('#pageTitle').textContent=titles[name];scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tab)));
+document.querySelectorAll('[data-command]').forEach(b=>b.addEventListener('click',()=>{dialog.dataset.command=b.dataset.command;document.querySelector('#confirmText').textContent=labels[b.dataset.command];dialog.showModal()}));
+document.querySelector('#cancel').onclick=()=>dialog.close();document.querySelector('#send').onclick=()=>{dialog.close();showToast('Commando staat klaar. De live Tesla-koppeling volgt zodra de backend is verbonden.')};
+function showToast(message){toast.textContent=message;toast.classList.add('show');clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>toast.classList.remove('show'),3500)}
+function updateLocation(){const name=document.querySelector('#locationName'),detail=document.querySelector('#locationDetail');if(!navigator.geolocation){name.textContent='Niet beschikbaar';return}name.textContent='Locatie bepalen…';detail.textContent='Even geduld';navigator.geolocation.getCurrentPosition(p=>{name.textContent='Huidige locatie';detail.textContent=`${p.coords.latitude.toFixed(4)}, ${p.coords.longitude.toFixed(4)}`},()=>{name.textContent='Locatietoegang nodig';detail.textContent='Sta locatie toe in de iPhone-instellingen'},{enableHighAccuracy:true,timeout:10000,maximumAge:300000})}
+document.querySelector('#locate').onclick=updateLocation;document.querySelector('#locationToggle').onchange=e=>document.querySelector('.location-card').hidden=!e.target.checked;
+document.addEventListener('DOMContentLoaded',()=>{document.documentElement.style.backgroundColor='#031329';const bar=window.Capacitor?.Plugins?.StatusBar;if(bar){bar.setOverlaysWebView({overlay:true});bar.setStyle({style:'LIGHT'})}});

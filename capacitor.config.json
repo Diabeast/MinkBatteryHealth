@@ -2,5 +2,6 @@
   "appId": "com.mink.batteryhealth",
   "appName": "Mink Battery Health",
   "webDir": "www",
-  "ios": {"contentInset": "automatic", "preferredContentMode": "mobile"}
+  "ios": {"contentInset": "automatic", "preferredContentMode": "mobile", "backgroundColor": "#031329"},
+  "plugins": {"StatusBar": {"overlaysWebView": true, "style": "LIGHT", "backgroundColor": "#031329"}}
 }
