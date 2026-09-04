@@ -6,9 +6,9 @@ raise "App target ontbreekt" unless app
 
 group = project.main_group.find_subpath("MinkBatteryWidget", true)
 group.set_source_tree("<group>")
-widget_source = group.new_file("../../../widget/MinkBatteryWidget.swift")
-widget_plist = group.new_file("../../../widget/Info.plist")
-widget_entitlements = group.new_file("../../../widget/Widget.entitlements")
+widget_source = group.new_file("../../widget/MinkBatteryWidget.swift")
+widget_plist = group.new_file("../../widget/Info.plist")
+widget_entitlements = group.new_file("../../widget/Widget.entitlements")
 bridge_source = project.main_group.find_subpath("App", true).new_file("../../../widget/WidgetBridgePlugin.swift")
 app_entitlements = project.main_group.find_subpath("App", true).new_file("../../../widget/App.entitlements")
 
