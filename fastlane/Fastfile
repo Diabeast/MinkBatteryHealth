@@ -30,7 +30,7 @@ platform :ios do
     )
 
     build_app(
-      project: "ios/App/App.xcodeproj",
+      workspace: "ios/App/App.xcworkspace",
       scheme: "App",
       export_method: "app-store",
       xcargs: "DEVELOPMENT_TEAM='#{ENV['TEAMID']}'"

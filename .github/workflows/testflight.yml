@@ -12,13 +12,13 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with: {ruby-version: "3.3", bundler-cache: true}
       - run: npm install
-      - name: Generate iOS project with Swift Package Manager
+      - name: Generate iOS project
         run: |
-          mv Gemfile Gemfile.fastlane
-          trap 'mv Gemfile.fastlane Gemfile' EXIT
-          npx cap add ios --packagemanager SPM
-          mv Gemfile.fastlane Gemfile
-          trap - EXIT
+          npx cap add ios
+          sed -i '' 's/^use_frameworks!$/use_frameworks! :linkage => :static/' ios/App/Podfile
+          cd ios/App
+          pod deintegrate
+          pod install
       - name: Apply Apple bundle identifier
         run: |
           sed -i '' 's/com\.mink\.batteryhealth/com.9CGZ7BWVXT.minkbatteryhealth/g' ios/App/App.xcodeproj/project.pbxproj
