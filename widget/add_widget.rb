@@ -21,6 +21,8 @@ embed.dst_subfolder_spec = "13"
 embed.add_file_reference(widget.product_reference, true)
 
 widget.build_configurations.each do |config|
+  config.build_settings["PRODUCT_NAME"] = "MinkBatteryWidget"
+  config.build_settings["EXECUTABLE_NAME"] = "MinkBatteryWidget"
   config.build_settings["PRODUCT_BUNDLE_IDENTIFIER"] = "com.9CGZ7BWVXT.minkbatteryhealth.widget"
   config.build_settings["INFOPLIST_FILE"] = "../../widget/Info.plist"
   config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "../../widget/Widget.entitlements"
