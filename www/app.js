@@ -3,3 +3,7 @@ const labels={climate:'Klimaat starten op 21 °C?',lock:'Auto vergrendelen?',cha
 document.querySelectorAll('[data-command]').forEach(button=>button.addEventListener('click',()=>{dialog.dataset.command=button.dataset.command;document.querySelector('#confirmText').textContent=labels[button.dataset.command];dialog.showModal()}));
 document.querySelector('#cancel').onclick=()=>dialog.close();
 document.querySelector('#send').onclick=()=>{dialog.close();alert('De veilige backendkoppeling wordt in de volgende versie geactiveerd.');};
+document.querySelectorAll('.tabbar button').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('.tabbar button').forEach(item=>item.classList.remove('active'));
+  button.classList.add('active');
+}));
