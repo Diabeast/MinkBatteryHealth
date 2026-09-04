@@ -28,3 +28,4 @@ body{position:fixed;inset:0;touch-action:manipulation}
 .battery-details{gap:7px;margin-bottom:8px}.battery-details article{padding:10px}.battery-page .chart-card{margin-bottom:0}
 .control-grid{gap:7px}.control-grid button{min-height:clamp(78px,11.5vh,106px);padding:11px}
 @media(max-height:750px){.sync-strip{height:31px;margin-top:5px}.page.active{height:calc(100dvh - 105px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}.settings-group button,.settings-group label{padding:6px 11px}.settings-group h3{padding:6px 11px 4px}.text-field input{padding:6px 7px}.settings-group{margin-bottom:6px}}
+.app-header h1{font-weight:750;letter-spacing:-.025em;color:#efffff;background:linear-gradient(100deg,#f7ffff 8%,#43dcff 52%,#54f2aa 94%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 5px #20cfff55) drop-shadow(0 0 10px #38efb62b)}
