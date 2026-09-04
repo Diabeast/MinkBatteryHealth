@@ -15,7 +15,8 @@ html,body{height:100%;overscroll-behavior:none}body.overview-open{overflow:hidde
 html,body{width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
 body{position:fixed;inset:0;touch-action:manipulation}
 .app-shell{height:100dvh;overflow:hidden;padding-bottom:calc(78px + env(safe-area-inset-bottom))}
-.page.active{height:calc(100dvh - 118px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:hidden}
+.page.active{height:calc(100dvh - 118px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;padding-bottom:12px}
+.overview.active{overflow:hidden;padding-bottom:0}
 .page:not(.overview) .page-intro{padding:13px 3px 8px}
 .page:not(.overview) .page-intro h2{display:none}
 .page:not(.overview) .page-intro>p:last-child{font-size:11px}
