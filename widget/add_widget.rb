@@ -30,8 +30,11 @@ widget.build_configurations.each do |config|
   config.build_settings["APPLICATION_EXTENSION_API_ONLY"] = "YES"
   config.build_settings["SKIP_INSTALL"] = "YES"
   config.build_settings["IPHONEOS_DEPLOYMENT_TARGET"] = "15.0"
-  config.build_settings["MARKETING_VERSION"] = "1.0"
+  config.build_settings["MARKETING_VERSION"] = "1.1"
   config.build_settings["CURRENT_PROJECT_VERSION"] = ENV.fetch("GITHUB_RUN_NUMBER", "1")
 end
-app.build_configurations.each { |config| config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "../../widget/App.entitlements" }
+app.build_configurations.each do |config|
+  config.build_settings["CODE_SIGN_ENTITLEMENTS"] = "../../widget/App.entitlements"
+  config.build_settings["MARKETING_VERSION"] = "1.1"
+end
 project.save
