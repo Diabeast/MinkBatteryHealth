@@ -16,6 +16,9 @@ jobs:
         run: |
           npx cap add ios
           npx capacitor-assets generate --ios
+          # Force the approved Mink icon into the exact App Store icon slot.
+          sips -z 1024 1024 resources/icon.png --out ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+          test "$(sips -g pixelWidth ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png | awk '/pixelWidth/{print $2}')" = "1024"
           sed -i '' "s/platform :ios, '14.0'/platform :ios, '15.0'/" ios/App/Podfile
           sed -i '' 's/^use_frameworks!$/use_frameworks! :linkage => :static/' ios/App/Podfile
           cd ios/App
