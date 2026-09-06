@@ -33,6 +33,7 @@
 .tabbar .active:before{background:#fff!important;box-shadow:0 0 10px #ffffff45}
 .page[data-page="controls"] .control-grid button{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;padding:8px!important}
 .page[data-page="controls"] .control-grid svg{flex:none;width:clamp(29px,8vw,38px)!important;height:clamp(27px,7vw,35px)!important;margin:0 0 3px!important;stroke:#fff!important}
+.page[data-page="controls"] .control-grid .tesla-control-icon{display:block;flex:none;width:clamp(38px,10vw,48px);height:clamp(38px,10vw,48px);margin:-5px 0 -3px;object-fit:contain;mix-blend-mode:screen;filter:brightness(1.8) grayscale(1)}
 .page[data-page="controls"] .control-grid span{font-size:12px!important;line-height:1.05;color:#fff}
 .page[data-page="controls"] .control-grid small{font-size:8px!important;line-height:1.05;margin:0!important;color:#9699a1}
-@media(max-height:700px){.page[data-page="controls"] .control-grid svg{width:27px!important;height:25px!important;margin-bottom:1px!important}.page[data-page="controls"] .control-grid span{font-size:11px!important}.page[data-page="controls"] .control-grid small{font-size:7px!important}}
+@media(max-height:700px){.page[data-page="controls"] .control-grid svg{width:27px!important;height:25px!important;margin-bottom:1px!important}.page[data-page="controls"] .control-grid .tesla-control-icon{width:36px;height:36px;margin:-4px 0 -2px}.page[data-page="controls"] .control-grid span{font-size:11px!important}.page[data-page="controls"] .control-grid small{font-size:7px!important}}
