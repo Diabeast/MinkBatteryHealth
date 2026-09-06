@@ -12,6 +12,7 @@ public class WidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         if let value = call.getString("updatedAt"), let date = ISO8601DateFormatter().date(from: value) { defaults.set(date.timeIntervalSince1970, forKey: "updatedAtTimestamp") }
         if let value = call.getInt("percent") { defaults.set(value, forKey: "percent") }
         if let value = call.getInt("range") { defaults.set(value, forKey: "range") }
+        if let value = call.getInt("health") { defaults.set(value, forKey: "health") }
         defaults.synchronize()
         WidgetCenter.shared.reloadTimelines(ofKind: "MinkBatteryWidget")
         call.resolve()
