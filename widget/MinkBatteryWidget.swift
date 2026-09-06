@@ -20,22 +20,31 @@ struct BatteryProvider: TimelineProvider {
               let server = defaults.string(forKey: "serverUrl"),
               let key = defaults.string(forKey: "apiKey"), !key.isEmpty,
               let url = URL(string: server.trimmingCharacters(in: CharacterSet(charactersIn: "/")) + "/api/v1/mobile/summary") else {
-            completion(Timeline(entries: [fallback], policy: .after(.now.addingTimeInterval(900))))
+            completion(Timeline(entries: [fallback], policy: .after(.now.addingTimeInterval(300))))
             return
         }
-        var request = URLRequest(url: url)
+        var components = URLComponents(url: url, resolvingAgainstBaseURL: false)
+        components?.queryItems = [URLQueryItem(name: "_", value: String(Int(Date().timeIntervalSince1970)))]
+        guard let freshURL = components?.url else {
+            completion(Timeline(entries: [fallback], policy: .after(.now.addingTimeInterval(300))))
+            return
+        }
+        var request = URLRequest(url: freshURL, cachePolicy: .reloadIgnoringLocalAndRemoteCacheData, timeoutInterval: 20)
         request.setValue(key, forHTTPHeaderField: "X-API-Key")
-        URLSession.shared.dataTask(with: request) { data, _, _ in
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        URLSession.shared.dataTask(with: request) { data, response, _ in
             var entry = fallback
-            if let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if (200..<300).contains(statusCode), let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 let percent = Self.number(json["battery_percent"]) ?? Double(fallback.percent)
                 let miles = Self.number(json["estimated_range"])
                 let range = miles.map { Int(($0 * 1.609344).rounded()) } ?? fallback.range
                 let address = json["address"] as? String ?? fallback.address
-                entry = BatteryEntry(date: .now, percent: Int(percent.rounded()), range: range, state: "Laatst bekend", address: address)
-                defaults.set(entry.percent, forKey: "percent"); defaults.set(entry.range, forKey: "range"); defaults.set(entry.address, forKey: "address")
+                let state = Self.state(json) ?? fallback.state
+                entry = BatteryEntry(date: .now, percent: Int(percent.rounded()), range: range, state: state, address: address)
+                defaults.set(entry.percent, forKey: "percent"); defaults.set(entry.range, forKey: "range"); defaults.set(entry.address, forKey: "address"); defaults.set(entry.state, forKey: "state"); defaults.set(entry.date.timeIntervalSince1970, forKey: "updatedAtTimestamp")
             }
-            completion(Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(900))))
+            completion(Timeline(entries: [entry], policy: .after(.now.addingTimeInterval(300))))
         }.resume()
     }
     private static func number(_ object: Any?) -> Double? {
@@ -45,9 +54,18 @@ struct BatteryProvider: TimelineProvider {
         if let value = object as? String { return Double(value) }
         return nil
     }
+    private static func state(_ json: [String: Any]) -> String? {
+        guard let value = json["connectivity"] else { return nil }
+        let raw: Any = (value as? [String: Any])?["value"] ?? value
+        let text = String(describing: raw).lowercased()
+        return text.contains("connect") ? "Online" : "Slaapstand"
+    }
     private func storedEntry() -> BatteryEntry {
         let defaults = UserDefaults(suiteName: suite)
-        return BatteryEntry(date: .now, percent: defaults?.integer(forKey: "percent") ?? 59, range: defaults?.integer(forKey: "range") ?? 232, state: "Laatst bekend", address: defaults?.string(forKey: "address") ?? "Locatie nog niet geladen")
+        let percent = defaults?.object(forKey: "percent") == nil ? 59 : defaults?.integer(forKey: "percent") ?? 59
+        let range = defaults?.object(forKey: "range") == nil ? 232 : defaults?.integer(forKey: "range") ?? 232
+        let timestamp = defaults?.double(forKey: "updatedAtTimestamp") ?? 0
+        return BatteryEntry(date: timestamp > 0 ? Date(timeIntervalSince1970: timestamp) : .now, percent: percent, range: range, state: defaults?.string(forKey: "state") ?? "Laatst bekend", address: defaults?.string(forKey: "address") ?? "Locatie nog niet geladen")
     }
 }
 
