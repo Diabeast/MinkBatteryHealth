@@ -28,6 +28,8 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :NSLocationWhenInUseUsageDescription string 'Mink Battery Health gebruikt je locatie om de positie van je auto te tonen.'" App/Info.plist
           cd ../..
           bundle exec ruby widget/add_widget.rb
+          sed -i '' 's/customClass="CAPBridgeViewController" customModule="Capacitor"/customClass="MinkBridgeViewController" customModule="App" customModuleProvider="target"/' ios/App/App/Base.lproj/Main.storyboard
+          grep -q 'customClass="MinkBridgeViewController"' ios/App/App/Base.lproj/Main.storyboard
       - name: Apply Apple bundle identifier
         run: |
           sed -i '' 's/com\.mink\.batteryhealth/com.9CGZ7BWVXT.minkbatteryhealth/g' ios/App/App.xcodeproj/project.pbxproj

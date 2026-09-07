@@ -10,11 +10,12 @@ widget_source = group.new_file("../../widget/MinkBatteryWidget.swift")
 widget_plist = group.new_file("../../widget/Info.plist")
 widget_entitlements = group.new_file("../../widget/Widget.entitlements")
 bridge_source = project.main_group.find_subpath("App", true).new_file("../../../widget/WidgetBridgePlugin.swift")
+bridge_controller_source = project.main_group.find_subpath("App", true).new_file("../../../widget/MinkBridgeViewController.swift")
 app_entitlements = project.main_group.find_subpath("App", true).new_file("../../../widget/App.entitlements")
 
 widget = project.new_target(:app_extension, "MinkBatteryWidget", :ios, "15.0")
 widget.add_file_references([widget_source])
-app.add_file_references([bridge_source])
+app.add_file_references([bridge_source, bridge_controller_source])
 app.add_dependency(widget)
 embed = app.copy_files_build_phases.find { |phase| phase.name == "Embed Foundation Extensions" } || app.new_copy_files_build_phase("Embed Foundation Extensions")
 embed.dst_subfolder_spec = "13"

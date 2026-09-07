@@ -1,4 +1,5 @@
 import Capacitor
+import Foundation
 import WidgetKit
 
 @objc(WidgetBridgePlugin)
@@ -13,8 +14,11 @@ public class WidgetBridgePlugin: CAPPlugin, CAPBridgedPlugin {
         if let value = call.getInt("percent") { defaults.set(value, forKey: "percent") }
         if let value = call.getInt("range") { defaults.set(value, forKey: "range") }
         if let value = call.getInt("health") { defaults.set(value, forKey: "health") }
+        defaults.set(UUID().uuidString, forKey: "snapshotRevision")
         defaults.synchronize()
-        WidgetCenter.shared.reloadTimelines(ofKind: "MinkBatteryWidget")
-        call.resolve()
+        DispatchQueue.main.async {
+            WidgetCenter.shared.reloadAllTimelines()
+            call.resolve(["updated": true])
+        }
     }
 }
