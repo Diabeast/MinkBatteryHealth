@@ -39,6 +39,9 @@ struct BatteryProvider: TimelineProvider {
             if (200..<300).contains(statusCode), let data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
                 let percent = Self.number(json["battery_percent"]) ?? Double(fallback.percent)
                 let miles = Self.number(json["estimated_range"])
+                    ?? Self.number(json["rated_range"])
+                    ?? Self.number(json["ideal_battery_range"])
+                    ?? Self.number(json["battery_range"])
                 let range = miles.map { Int(($0 * 1.609344).rounded()) } ?? fallback.range
                 let address = Self.text(json["address"]) ?? fallback.address
                 let state = Self.state(json) ?? fallback.state
@@ -82,7 +85,7 @@ struct BatteryWidgetView: View {
     @Environment(\.colorScheme) private var colorScheme
     let entry: BatteryEntry
 
-    private var background: Color { colorScheme == .dark ? Color(red: 0.035, green: 0.039, blue: 0.047) : Color(red: 0.965, green: 0.965, blue: 0.955) }
+    private var background: Color { colorScheme == .dark ? .black : Color(red: 0.965, green: 0.965, blue: 0.955) }
     private var primary: Color { colorScheme == .dark ? .white : Color(red: 0.035, green: 0.039, blue: 0.047) }
     private var secondary: Color { colorScheme == .dark ? Color(red: 0.76, green: 0.78, blue: 0.81) : Color(red: 0.24, green: 0.25, blue: 0.27) }
     private let green = Color(red: 0.27, green: 0.82, blue: 0.57)
