@@ -38,3 +38,17 @@
 .page[data-page="controls"] .control-grid span{font-size:12px!important;line-height:1.05;color:#fff}
 .page[data-page="controls"] .control-grid small{font-size:8px!important;line-height:1.05;margin:0!important;color:#9699a1}
 @media(max-height:700px){.page[data-page="controls"] .control-grid svg{width:27px!important;height:25px!important;margin-bottom:1px!important}.page[data-page="controls"] .control-grid .tesla-control-icon{width:36px;height:36px;margin:-4px 0 -2px}.page[data-page="controls"] .control-grid span{font-size:11px!important}.page[data-page="controls"] .control-grid small{font-size:7px!important}}
+
+/* Data-proof home geometry: live values may truncate, never resize the layout. */
+html{-webkit-text-size-adjust:100%}
+.top-status-bar{box-sizing:border-box!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;align-content:center!important;contain:size layout paint}
+.top-status-bar>span,.top-status-bar>small{display:block!important;width:100%!important;max-width:100%!important;text-align:center!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.top-status-bar>span:first-child{display:flex!important;justify-content:center!important}.top-status-bar span+span:before{display:none!important}
+.overview.active{display:grid!important;grid-template-rows:auto 64px minmax(0,1fr)!important;gap:var(--page-gap)!important;overflow:hidden!important}
+.overview .health-hero{min-height:0!important;max-height:112px;overflow:hidden}
+.overview .clean-metrics{height:64px!important;min-height:64px!important;max-height:64px!important;overflow:hidden}
+.overview .clean-metrics>*{height:64px!important;min-height:64px!important;max-height:64px!important;overflow:hidden!important}
+.overview .clean-metrics strong{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.overview .clean-location{height:100%!important;min-height:0!important;max-height:none!important;overflow:hidden!important}
+.overview .location-copy{min-width:0;max-width:100%;overflow:hidden}.overview .location-copy strong,.overview .location-copy small{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap!important}
+@media(max-height:700px){.overview.active{grid-template-rows:auto 56px minmax(0,1fr)!important}.overview .health-hero{max-height:94px}.overview .clean-metrics,.overview .clean-metrics>*{height:56px!important;min-height:56px!important;max-height:56px!important}}
